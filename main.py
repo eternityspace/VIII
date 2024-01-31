@@ -19,7 +19,7 @@ def get_birthdays_per_week(all_users):
               "Thursday": [], "Friday": [], "Saturday": [], "Sunday": []}
 
     current_day = date.today()
-    nex_weed_day = current_day + timedelta(days=7)
+    next_week_day = current_day + timedelta(days=7)
 
     for user in all_users:
         user_birthday = user['birthday'].replace(year=current_day.year)
