@@ -3,6 +3,9 @@ from datetime import date, datetime, timedelta
 
 def get_birthdays_per_week(all_users):
 
+    if not all_users:
+        return {}
+
     WEEK_DAYS = {
         0: 'Monday',
         1: 'Tuesday',
@@ -12,60 +15,51 @@ def get_birthdays_per_week(all_users):
         5: 'Saturday',
         6: 'Sunday',
     }
+    result = {"Monday": [], "Tuesday": [], "Wednesday": [],
+              "Thursday": [], "Friday": [], "Saturday": [], "Sunday": []}
 
-    users = {"Monday": [], "Tuesday": [], "Wednesday": [],
-             "Thursday": [], "Friday": []}
-
-    current_date = date.today()
-    next_week_date = current_date + timedelta(days=7)
+    current_day = date.today()
+    nex_weed_day = current_day + timedelta(days=7)
 
     for user in all_users:
+        user_birthday = user['birthday'].replace(year=current_day.year)
 
-        date_ = user['birthday']
+        if user_birthday < current_day:
+            user_birthday += timedelta(days=365)
 
-        user_month = date_.month
+        if user_birthday.weekday() == 5:
+            user_birthday += timedelta(days=2)
+        elif user_birthday.weekday() == 6:
+            user_birthday += timedelta(days=1)
 
-        user_day = date_.day
-        user_birthday = date(
-            current_date.year, user_month, user_day)
-        print('30', current_date, user_birthday, next_week_date)
-        delta = user_birthday - current_date
-        if delta.days < 0:
-            user_birthday = date(
-                current_date.year + 1, user_month, user_day)
-            print("32")
-        delta = user_birthday - current_date
-        if delta.days < 7:
-            weekday_user = user_birthday.weekday()
+        week_day = WEEK_DAYS[user_birthday.weekday()]
 
-            if weekday_user in ('Sunday', 'Saturday'):
-                pass
+        if current_day <= user_birthday < nex_weed_day:
 
-            else:
-                users[WEEK_DAYS[weekday_user]].append(
-                    user['name'].split(' ')[0])
+            result[week_day].append(user['name'].split()[0])
 
-    for weekday, user in list(users.items()):
-        if not user:
-            del users[weekday]
-    print(users)
-    return users
+    result_final = {}
+
+    for weekday, user in result.items():
+        if user != []:
+            result_final[weekday] = user
+
+    return result_final
 
 
 if __name__ == '__main__':
 
     users = [
-        {"name": "Bill Gates", "birthday": datetime(1955, 11, 25).date()},
-        {"name": "Al Pach", "birthday": datetime(1956, 12, 26).date()},
-        {"name": "Foma Kiniaev", "birthday": datetime(1969, 12, 29).date()},
-        {"name": "not Bill Gates", "birthday": datetime(1955, 12, 28).date()},
-        {"name": "not Al Pach", "birthday": datetime(1956, 12, 29).date()},
+        {"name": "Bill Gates", "birthday": datetime(1955, 2, 5).date()},
+        {"name": "Al Pach", "birthday": datetime(1956, 2, 7).date()},
+        {"name": "Foma Kiniaev", "birthday": datetime(1969, 2, 4).date()},
+        {"name": "not Bill Gates", "birthday": datetime(1955, 2, 3).date()},
+        {"name": "not Al Pach", "birthday": datetime(1956, 2, 2).date()},
         {"name": "not Foma Kiniaev", "birthday": datetime(1969, 1, 2).date()},
-        {"name": "Jan Koum", "birthday": datetime(1976, 1, 1).date()},
+        {"name": "Jan Koum", "birthday": datetime(1976, 2, 1).date()},
     ]
 
     result = get_birthdays_per_week(users)
     print(result)
-
     for day_name, names in result.items():
         print(f"{day_name}: {', '.join(names)}")
