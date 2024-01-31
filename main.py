@@ -34,7 +34,7 @@ def get_birthdays_per_week(all_users):
 
         week_day = WEEK_DAYS[user_birthday.weekday()]
 
-        if current_day <= user_birthday < nex_weed_day:
+        if current_day <= user_birthday < next_week_day:
 
             result[week_day].append(user['name'].split()[0])
 
